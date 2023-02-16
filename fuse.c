@@ -1,4 +1,5 @@
 #include <fuse.h>
+#include <string.h>
 #ifndef FUSE_USE_VERSION
 #define FUSE_USE_VERSION 26
 #endif
@@ -21,6 +22,9 @@ typedef int (*fuse_fill_dir_t) (void *buf, const char *name,
 	 */
 int ft_getattr (const char *path, struct stat *s)
 {
+	if(!strcmp(path,"/")){
+		s->st_mode = S_IFDIR | 00400;
+	}
     return 0;
 }
 /** Read directory
@@ -44,9 +48,13 @@ int ft_getattr (const char *path, struct stat *s)
 	 *
 	 * Introduced in version 2.3
 	 */
-int ft_readdir (const char *path, void *cookie, fuse_fill_dir_t handler, off_t offset,
+int ft_readdir (const char *path, void *buff, fuse_fill_dir_t filler, off_t offset,
 			struct fuse_file_info *fi)
 {
+	static struct stat regular_file = {.st_mode =S_IFDIR | 00400};
+	if(!strcmp(path,"/")){
+		filler(buff,"my_file",&regular_file,0);
+	}
     return 0;
 }
 
